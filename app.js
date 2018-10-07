@@ -192,13 +192,16 @@ function main() {
 	*/
 		
 	// var activeOfferList = getActiveOfferList();
-	
+	// if(activeOfferList.length === 0){
+	// return 0;	
+	// }
 	/*
+	var avrRate_discnt = activeOfferList[0].rate - 0.001;
+
 	for( activeOffer in activeOfferList ){
 		// cancel
 		// offerCancel(activeOffer.id);
 		
-		var avrRate_discnt = avgRate - 0.001;
 
 		if(avgRate_discnt < avrRate * 0.8) {
 			return 0;
