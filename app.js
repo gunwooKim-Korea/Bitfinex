@@ -105,6 +105,25 @@ function newOfferFunding(){
 	});
 }
 
+function getActiveOfferList(){
+	const activeOfferList_uri = '/v1/offers';
+	var activeOfferList = [];
+	const activeOfferList_body = {
+	};
+	
+	const activeOfferList_options = make_option(activeOfferList_uri, activeOfferList_body);
+	
+	request.post(
+	  activeOfferList_options,
+	  function(error, response, body) {
+		console.log('activeOfferList_response:', JSON.parse(body)[0].id);//JSON.stringify(response));
+		activeOfferList = JSON.parse(body);
+	  }
+	);
+	
+	return activeOfferList;
+}
+
 //FundingBook에 게시했던 Offer를 취소하는 함수
 function offerCancel(order_id){
 	const offerCancel_uri = '/v1/offer/cancel';
@@ -141,35 +160,36 @@ function getActiveCreditsInfo(order_id){
 }
 
 function main() {
+	// var avgRate = fundingBook(); // 구현해야함
+	
+	// var available_usd = getBalanceInfo(); //구현완료
 
-	var available_usd = getBalanceInfo();
-	console.log(available_usd);
+	/*
+	if(available_usd < 50) {
+		return 0;
+	} else {
+		// new Offer (Funding Logic)
+		newOfferFunding(avgRate, available_usd);
+	}	
+	*/
+		
+	// var activeOfferList = getActiveOfferList();
 	
 	/*
-	async.waterfall([
-		// Balance Info Logic
-		function(callback){
-			available_usd = getBalanceInfo();
-			callback(null);
-		},
-		// Balance Info Logic22222
-		function(callback){
-			console.log('available_usd : ', available_usd);
-			callback(null);
-		},
+	for( activeOffer in activeOfferList ){
+		// cancel
+		// offerCancel(activeOffer.id);
 		
-	], function(err) {
-		console.log('error:', err);
-	});
+		var avrRate_discnt = avgRate - 0.001;
+
+		if(avgRate_discnt < avrRate * 0.8) {
+			return 0;
+		}
+		
+		// new Offer (Funding Logic);
+		// newOfferFunding(avgRate_discnt, available_usd);
+	}
 	*/
-	
-	// new Offer (Funding Logic)
-	// const order_id = newOfferFunding();
-	// newOfferFunding();
-	
-	// cancel
-	// offerCancel('323098323');
-	
 }
 
 main();
