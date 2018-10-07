@@ -58,6 +58,8 @@ function make_option(uri, body){
 //현재 잔액정보를 제공하는 함수
 function getBalanceInfo(){
 	const balance_uri = '/v1/balances';
+	const balance_completeURI = baseUri + balance_uri;
+
 	var available_usd = 0;
 	
 	const balance_body = {
@@ -65,13 +67,11 @@ function getBalanceInfo(){
 	};
 
 	const balance_options = make_option(balance_uri, balance_body);
-
-	var balance_completeURI = baseUri + balance_uri;
 	
 	await fetch(balance_completeURI, balance_options)
 	.then(res => res.json())
 	.then(res => {
-		available_usd = res[1].available;
+		available_usd = res[1].available; //1번은 USD에 
 	});
 
 	return available_usd;
@@ -80,6 +80,7 @@ function getBalanceInfo(){
 //FundingBook에 Offer하는 함수
 function newOfferFunding(){
 	const newOffer_uri = '/v1/offer/new';
+	const newOffer_completeURI = baseUri + newOffer_uri;
 	
 	const newOffer_data = {
 	  currency: 'USD',
@@ -99,32 +100,29 @@ function newOfferFunding(){
 
 	const newOffer_options = make_option(newOffer_uri, newOffer_body);
 
-	request.post(
-	  newOffer_options,
-	  function(error, response, body) {
-		console.log('newOffer_response:', JSON.stringify(response));
-		//const order_id = JSON.stringify(response).id
-		//return order_id;
-	  }
-	);
+	await fetch(newOffer_completeURI, newOffer_options)
+	.then(res => res.json())
+	.then(res => {
+		console.log(res);
+	});
 }
 
 //FundingBook에 게시했던 Offer를 취소하는 함수
 function offerCancel(order_id){
 	const offerCancel_uri = '/v1/offer/cancel';
-	
+	const offerCancel_completeURI = baseUri + offerCancel_uri;
+
 	const offerCancel_body = {
 	   order_id: order_id,
 	};
 	
 	const offerCancel_options = make_option(offerCancel_uri, offerCancel_body);
 	
-	request.post(
-	  offerCancel_options,
-	  function(error, response, body) {
-		console.log('offerCancel_response:', JSON.stringify(response));
-	  }
-	);
+	await fetch(offerCancel_completeURI, offerCancel_options)
+	.then(res => res.json())
+	.then(res => {
+		console.log(res);
+	});
 }
 
 //현재 Funding한 정보 출력(많이 쓰이진 않을듯)
