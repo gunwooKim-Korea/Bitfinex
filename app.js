@@ -1,6 +1,6 @@
 const request = require('request');	
 const crypto = require('crypto');
-const async = require('async');
+const fetch = require('node-fetch');
 
 const baseUri = 'https://api.bitfinex.com';
 const nonce = Date.now().toString();
@@ -28,12 +28,12 @@ body	: 각 uri의 endpoint가 필요한 데이터들
 
 //공통적인 option들을 만드는 함수
 function make_option(uri, body){
-	
 	const completeURI = baseUri + uri;
 	
 	body.request = uri;
 	body.nonce	 = nonce;
-	
+	body.url	= completeURI;
+
 	const payload_tmp = new Buffer(JSON.stringify(body))
 		.toString('base64');
 	
@@ -43,13 +43,13 @@ function make_option(uri, body){
 	  .digest('hex');
 	
 	const options_tmp = {
-	  url: completeURI,
-	  headers: {
+		method: 'post',	
+		headers: {
 		'X-BFX-APIKEY': apiKey,
 		'X-BFX-PAYLOAD': payload_tmp,
 		'X-BFX-SIGNATURE': signature_tmp
-	  },
-	  body: JSON.stringify(body)
+	  	},
+		body: JSON.stringify(body)
 	};
 	
 	return options_tmp;
@@ -66,14 +66,14 @@ function getBalanceInfo(){
 
 	const balance_options = make_option(balance_uri, balance_body);
 
-	request.post(
-	  balance_options,
-	  function(error, response, body) {
-		console.log('balanceInfo_response:', JSON.parse(body)[1]);
-		available_usd = JSON.parse(body)[1].available;
-	  }
-	);
+	var balance_completeURI = baseUri + balance_uri;
 	
+	await fetch(balance_completeURI, balance_options)
+	.then(res => res.json())
+	.then(res => {
+		available_usd = res[1].available;
+	});
+
 	return available_usd;
 }
 
