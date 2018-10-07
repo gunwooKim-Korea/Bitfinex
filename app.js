@@ -159,6 +159,24 @@ function getActiveCreditsInfo(order_id){
 	);
 }
 
+function make_req_v2(){
+
+	const url = 'https://api.bitfinex.com/v2';
+	const apiPath = '/auth/r/alerts';
+	// const body ={};
+	
+	// request
+	request.get("https://api.bitfinex.com/v2/book/fUSD/P3",
+	  (error, response, body) => {
+		console.log(body);
+		/*
+		for( var a in body){
+			var;
+		}
+		*/
+	});
+}
+
 function main() {
 	// var avgRate = fundingBook(); // 구현해야함
 	
