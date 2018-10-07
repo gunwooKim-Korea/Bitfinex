@@ -28,11 +28,9 @@ body	: 각 uri의 endpoint가 필요한 데이터들
 
 //공통적인 option들을 만드는 함수
 function make_option(uri, body){
-	const completeURI = baseUri + uri;
 	
 	body.request = uri;
 	body.nonce	 = nonce;
-	body.url	= completeURI;
 
 	const payload_tmp = new Buffer(JSON.stringify(body))
 		.toString('base64');
