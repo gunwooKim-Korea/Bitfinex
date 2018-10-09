@@ -23,6 +23,8 @@ const crypto = require('crypto');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const dpdlvldkdlzl = require('./dpdlvldkdlzl');
+const Telebot = require('telebot');
+const telegramAPI = require('./telegram');
 
 const baseUri = 'https://api.bitfinex.com';
 
@@ -37,6 +39,27 @@ if(dd<10) {
 
 if(mm<10) {
     mm='0'+mm
+}
+
+const bot = new Telebot(telegramAPI.telegramToken);
+async function sendTelegram(message) {
+
+    bot.on(/\/start/, msg => {
+        msg.reply.text(message);
+    })
+
+    bot.on(/^\/say (.+)$/, (msg, props) => {
+        const text = props.match[1];
+        return bot.sendMessage(msg.from.id, text, { replyToMessage: msg.message_id });
+    });
+
+	bot.start();
+
+    await fetch('https://api.telegram.org/bot' + telegramAPI.telegramToken + '/sendMessage?chat_id=' + telegramAPI.chatId + '&text=' + message.toString('base64') + '\n', {})
+        .then(res => res.json())
+        .then(res => {
+        	console.log(res);
+        });
 }
 
 function log(str){
@@ -282,6 +305,10 @@ async function main() {
        // let offerRate = (avgRate * 0.96)*365*100; //평균이율보다 조금낮게, 연이율로 계산
 		let offerRate = marketAvgRate[0] * 1.01 * 365 * 100;
         await newOfferFunding(offerRate, available_usd);
+
+        await sendTelegram("ok Offer ! \n" +
+			"\nRate : " + offerRate +
+			"\nUSD : " + available_usd);
     }
 
     if(activeOfferList.length !== 0) {
@@ -297,6 +324,7 @@ async function main() {
             await offerCancel(activeOfferList[i].id);
 
             if(avgRate_discount < avgRate * 0.8) {
+                await sendTelegram("rate is too low !");
                 log('rate is too low !!');
             	return 0;
             }
@@ -304,10 +332,15 @@ async function main() {
 
         // new Offer (Funding Logic);
         await newOfferFunding(avgRate_discount, available_usd);
+
+        await sendTelegram("ok Offer after cancel ! " +
+            "Rate : " + avgRate_discount +
+            "USD : " + available_usd);
     }
 
     log('END   : ' + Date.now().toString());
     log('------------------------------------------------');
+
 	return 0;
 }
 
